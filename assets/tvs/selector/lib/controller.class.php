@@ -60,32 +60,33 @@ class SelectorController {
 
     public function listing() {
         $search = is_scalar($_REQUEST['search']) ? $_REQUEST['search'] : '';
-            if (!empty($search)) {
-                $this->dlParams['search'] = $search;
-                $searchContentFields = explode(',', $this->dlParams['searchContentFields']);
-                $searchQuery = array();
-                $addWhereList = isset($this->dlParams['addWhereList']) ? $this->dlParams['addWhereList'] : '';
-                foreach ($searchContentFields as $field) {
-                    $searchQuery[] = "c.{$field} LIKE '%{$search}%'";
-                }
-                $searchQuery = implode(' OR ', $searchQuery);
-                if (is_numeric($search)) {
-                    $idQuery = "c.id = {$search}";
-                    $searchQuery = empty($searchQuery) ? $idQuery : "{$idQuery} OR {$searchQuery}";
-                }
-                $filters = array();
-                $searchTVFields = explode(',', $this->dlParams['searchTVFields']);
-                foreach ($searchTVFields as $tv) {
-                    $filters[] = "tv:{$tv}:like:{$search}";
-                }
-                $filters = implode(';',$filters);
-                if (!empty($filters)) {
-                    $filters = "OR({$filters})";
-                    $this->dlParams['filters'] = $filters;
-                }
-                $this->dlParams['addWhereList'] = empty($addWhereList) ? $searchQuery : "{$addWhereList} AND ({$searchQuery})";
-            }
+        if (empty($search)) return array();
+
+        $this->dlParams['search'] = $search;
+        $searchContentFields = explode(',', $this->dlParams['searchContentFields']);
+        $searchQuery = array();
+        $addWhereList = isset($this->dlParams['addWhereList']) ? $this->dlParams['addWhereList'] : '';
+        foreach ($searchContentFields as $field) {
+            $searchQuery[] = "c.{$field} LIKE '%{$search}%'";
+        }
+        $searchQuery = implode(' OR ', $searchQuery);
+        if (is_numeric($search)) {
+            $idQuery = "c.id = {$search}";
+            $searchQuery = empty($searchQuery) ? $idQuery : "{$idQuery} OR {$searchQuery}";
+        }
+        $filters = array();
+        $searchTVFields = explode(',', $this->dlParams['searchTVFields']);
+        foreach ($searchTVFields as $tv) {
+            $filters[] = "tv:{$tv}:like:{$search}";
+        }
+        $filters = implode(';',$filters);
+        if (!empty($filters)) {
+            $filters = "OR({$filters})";
+            $this->dlParams['filters'] = $filters;
+        }
+        $this->dlParams['addWhereList'] = empty($addWhereList) ? $searchQuery : "{$addWhereList} AND ({$searchQuery})";
         return $this->modx->runSnippet("DocLister", $this->dlParams);
+
 
     }
 }

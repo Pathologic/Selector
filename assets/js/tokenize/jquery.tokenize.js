@@ -139,6 +139,10 @@
                 $this.keyup(e);
             });
 
+            this.searchInput.on('keypress', function(e){
+                $this.keypress(e);
+            });
+
             this.searchInput.on('paste', function(){
                 setTimeout(function(){ $this.resizeSearchInput(); }, 10);
                 setTimeout(function(){
@@ -304,15 +308,11 @@
 
         keydown: function(e){
 
-            if(e.keyCode == KEYS.COMMA){
-                e.preventDefault();
-                this.tokenAdd(this.searchInput.val(), '');
-            } else {
-                switch(e.keyCode){
+                switch (e.keyCode) {
                     case KEYS.BACKSPACE:
-                        if(this.searchInput.val().length == 0){
+                        if (this.searchInput.val().length == 0) {
                             e.preventDefault();
-                            if($('li.Token.PendingDelete', this.tokensContainer).length){
+                            if ($('li.Token.PendingDelete', this.tokensContainer).length) {
                                 this.tokenRemove($('li.Token.PendingDelete').attr('data-value'));
                             } else {
                                 $('li.Token:last', this.tokensContainer).addClass('PendingDelete');
@@ -323,12 +323,12 @@
 
                     case KEYS.TAB:
                     case KEYS.ENTER:
-                        if($('li.Hover', this.dropdown).length){
+                        if ($('li.Hover', this.dropdown).length) {
                             var element = $('li.Hover', this.dropdown);
                             e.preventDefault();
                             this.tokenAdd(element.attr('data-value'), element.attr('data-text'));
                         } else {
-                            if(this.searchInput.val()){
+                            if (this.searchInput.val()) {
                                 e.preventDefault();
                                 this.tokenAdd(this.searchInput.val(), '');
                             }
@@ -356,8 +356,15 @@
                         this.resetPendingTokens();
                         break;
                 }
-            }
 
+
+        },
+
+        keypress: function(e) {
+            if (e.keyCode == 44) {
+                e.preventDefault();
+                this.tokenAdd(this.searchInput.val(), '');
+            }
         },
 
         keyup: function(e){
@@ -369,6 +376,7 @@
                 case KEYS.ESCAPE:
                 case KEYS.ARROW_UP:
                 case KEYS.ARROW_DOWN:
+                case KEYS.COMMA:
                     break;
 
                 case KEYS.BACKSPACE:
