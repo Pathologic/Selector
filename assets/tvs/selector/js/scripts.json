@@ -1,0 +1,16 @@
+{
+  "scripts": {
+    "Sortable":{
+      "version":"1.2.0",
+      "src":"assets/js/sortable/Sortable.min.js"
+    },
+    "Tokenize" : {
+      "version":"2.4.2",
+      "src":"assets/js/tokenize/jquery.tokenize.js"
+    },
+    "Selector" : {
+      "version":"1.0.0",
+      "src":"assets/tvs/selector/js/selector.js"
+    }
+  }
+}

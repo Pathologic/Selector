@@ -1,0 +1,13 @@
+div.Tokenize ul.TokensContainer {
+    height:auto;
+    width:100%;
+}
+div.Tokenize ul.TokensContainer li {
+    list-style: none!important;
+}
+div.Tokenize ul.TokensContainer li a {
+    text-decoration: none!important;
+}
+div.Tokenize ul.TokensContainer li.Token, div.Tokenize ul.TokensContainer li.TokenSearch {
+    margin-bottom:5px;
+}
