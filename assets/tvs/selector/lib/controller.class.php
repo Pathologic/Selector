@@ -21,6 +21,7 @@ class SelectorController {
         'searchContentFields'  =>  'id,pagetitle,longtitle',
         'searchTVFields'    => '',
         'textField'    => 'pagetitle',
+        'addWhereList'  => 'c.published = 1',
         'prepare'      => 'Selector\SelectorController::prepare'
     );
     public function __construct($modx) {
@@ -64,17 +65,16 @@ class SelectorController {
 
         $this->dlParams['search'] = $search;
         $searchContentFields = explode(',', $this->dlParams['searchContentFields']);
-        $searchQuery = array();
-        $addWhereList = isset($this->dlParams['addWhereList']) ? $this->dlParams['addWhereList'] : '';
-        foreach ($searchContentFields as $field) {
-            $searchQuery[] = "c.{$field} LIKE '%{$search}%'";
-        }
-        $searchQuery = implode(' OR ', $searchQuery);
-        if (is_numeric($search)) {
-            $idQuery = "c.id = {$search}";
-            $searchQuery = empty($searchQuery) ? $idQuery : "{$idQuery} OR {$searchQuery}";
-        }
         $filters = array();
+
+        if (is_numeric($search)) {
+            $filters[] = "content:id:=:{$search}";
+        }
+
+        foreach ($searchContentFields as $field) {
+            $filters[] = "content:{$field}:like:{$search}";
+        }
+
         $searchTVFields = explode(',', $this->dlParams['searchTVFields']);
         foreach ($searchTVFields as $tv) {
             $filters[] = "tv:{$tv}:like:{$search}";
@@ -84,9 +84,8 @@ class SelectorController {
             $filters = "OR({$filters})";
             $this->dlParams['filters'] = $filters;
         }
-        $this->dlParams['addWhereList'] = empty($addWhereList) ? $searchQuery : "{$addWhereList} AND ({$searchQuery})";
-        return $this->modx->runSnippet("DocLister", $this->dlParams);
 
+        return $this->modx->runSnippet("DocLister", $this->dlParams);
 
     }
 }
