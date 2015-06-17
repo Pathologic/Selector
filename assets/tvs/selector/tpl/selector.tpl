@@ -12,10 +12,10 @@
             debounce: 600,
             newElements: false,
             onAddToken: function (value, text, e) {
-                selector.update(e.select,$('#tv[+tv_id+]'));
+                selector.update(e.select,$('#tv[+tv_id+]'),',');
             },
             onRemoveToken: function(value, e) {
-                selector.update(e.select,$('#tv[+tv_id+]'));
+                selector.update(e.select,$('#tv[+tv_id+]'),',');
             }
         });
         var el = $('.tokenizetv[+tv_id+] ul.TokensContainer');
@@ -26,7 +26,7 @@
                         if (e.related.className == "TokenSearch") return false;
                     },
                     onSort: function (e) {
-                        selector.sort($('.tokenizetv[+tv_id+]'),$('#tv[+tv_id+]'));
+                        selector.sort($('.tokenizetv[+tv_id+]'),$('#tv[+tv_id+]'),',');
                     }
             }
         );
