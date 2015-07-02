@@ -27,6 +27,11 @@ div.Tokenize ul.TokensContainer {
     height: 100px;
     overflow-y: auto;
     background-color: white;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 div.Tokenize.Disabled ul.TokensContainer,
