@@ -6,14 +6,18 @@ Selector allows to choose documents from dropdown list and save their ids in TV.
 
 You can modify it via config files and custom controllers. 
 
-Config file contains an array with some Tokenize options:
+Config file contains an array with some Tokenize options and token template:
 ```
 <?php
 return array(
-    'maxElements'  => 0,
+    'maxElements' => 0,
     'nbDropdownElements' => 10,
     'searchMaxLength' => 30,
-    'searchMinLength' => 0
+    'searchMinLength' => 0,
+    'textField' => 'text',
+    'valueField' => 'id',
+    'htmlField' => 'html',
+    'tokenTpl' => '@CODE: <option value="[+id+]" selected>[+id+]. [+pagetitle+]</option>'
 );
 ```
 

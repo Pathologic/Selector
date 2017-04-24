@@ -16,7 +16,11 @@ class Selector
         'maxElements'        => 0,
         'nbDropdownElements' => 10,
         'searchMaxLength'    => 30,
-        'searchMinLength'    => 0
+        'searchMinLength'    => 0,
+        'textField'          => 'text',
+        'valueField'         => 'id',
+        'htmlField'          => 'html',
+        'tokenTpl'           => '@CODE: <option value="[+id+]" selected>[+id+]. [+pagetitle+]</option>'
     );
     public $tpl = 'assets/tvs/selector/tpl/selector.tpl';
     public $jsListDefault = 'assets/tvs/selector/js/scripts.json';
@@ -122,12 +126,15 @@ class Selector
             'nbDropdownElements' => $this->config['nbDropdownElements'],
             'searchMaxLength'    => $this->config['searchMaxLength'],
             'searchMinLength'    => $this->config['searchMinLength'],
+            'textField'          => $this->config['textField'],
+            'valueField'         => $this->config['valueField'],
+            'htmlField'          => $this->config['htmlField'],
             'values'             => !empty($this->tv['value']) ? $this->modx->runSnippet('DocLister', array(
                 'idType'        => 'documents',
                 'documents'     => $this->tv['value'],
                 'showNoPublish' => 1,
                 'sortType'      => 'doclist',
-                'tpl'           => '@CODE: <option value="[+id+]" selected>[+id+]. [+pagetitle+]</option>'
+                'tpl'           => $this->config['tokenTpl']
             )) : ''
         );
 

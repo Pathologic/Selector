@@ -22,6 +22,7 @@ class SelectorController
         'depth'               => 10,
         'searchContentFields' => 'id,pagetitle,longtitle',
         'searchTVFields'      => '',
+        'idField'             => 'id',
         'textField'           => 'pagetitle',
         'addWhereList'        => 'c.published = 1',
         'prepare'             => 'Selector\SelectorController::prepare'
@@ -79,7 +80,7 @@ class SelectorController
         }
         $html = preg_replace("/(" . preg_quote($_DL->getCFGDef('search'), "/") . ")/iu", "<b>$0</b>",
             $data[$_DL->getCFGDef('textField', 'pagetitle')]);
-        $data['text'] = "{$data['id']}. {$data[$_DL->getCFGDef('textField','pagetitle')]}";
+        $data['text'] = "{$data[$_DL->getCFGDef('idField','id')]}. {$data[$_DL->getCFGDef('textField','pagetitle')]}";
         $data['html'] = "<div><small>{$docCrumbs}</small><br>{$data['id']}. {$html}</div>";
 
         return $data;
