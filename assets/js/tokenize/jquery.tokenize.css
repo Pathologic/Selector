@@ -23,7 +23,7 @@ div.Tokenize ul li {
 
 div.Tokenize ul.TokensContainer {
     cursor: text;
-    padding: 0 5px 0 0;
+    padding: 0 5px 5px 0;
     height: 100px;
     overflow-y: auto;
     background-color: white;
@@ -32,6 +32,10 @@ div.Tokenize ul.TokensContainer {
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+}
+
+div.Tokenize ul.TokensContainer.Autosize {
+    height: auto;
 }
 
 div.Tokenize.Disabled ul.TokensContainer,

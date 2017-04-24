@@ -5,11 +5,11 @@
       "src":"assets/js/sortable/Sortable.min.js"
     },
     "Tokenize" : {
-      "version":"2.4.2",
+      "version":"2.6.1",
       "src":"assets/js/tokenize/jquery.tokenize.js"
     },
     "Selector" : {
-      "version":"1.0.0",
+      "version":"1.1.0",
       "src":"assets/tvs/selector/js/selector.js"
     }
   }
