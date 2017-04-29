@@ -1,6 +1,12 @@
+div.Tokenize {
+    display: block;
+}
 div.Tokenize ul.TokensContainer {
     height:auto;
     width:100%;
+}
+div.Tokenize ul.Dropdown {
+    width:auto;
 }
 div.Tokenize ul.TokensContainer li {
     list-style: none!important;
