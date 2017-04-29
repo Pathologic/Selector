@@ -16,7 +16,7 @@
  *
  * @author      David Zeller <me@zellerda.com>
  * @license     http://www.opensource.org/licenses/BSD-3-Clause New BSD license
- * @version     2.4.2
+ * @version     2.6
  */
 (function($, tokenize){
 
@@ -36,6 +36,30 @@
     // Data storage constant
     var DATA = 'tokenize';
 
+    /**
+     * Get Tokenize object
+     *
+     * @param {Object} options
+     * @param {jQuery} el
+     * @returns {$.tokenize}
+     */
+    var getObject = function(options, el){
+
+        if(!el.data(DATA)){
+            var obj = new $.tokenize($.extend({}, $.fn.tokenize.defaults, options));
+            el.data(DATA, obj);
+            obj.init(el);
+        }
+
+        return el.data(DATA);
+
+    };
+
+    /**
+     * Tokenize constructor
+     *
+     * @param {Object} opts
+     */
     $.tokenize = function(opts){
 
         if(opts == undefined){
@@ -47,6 +71,11 @@
 
     $.extend($.tokenize.prototype, {
 
+        /**
+         * Init tokenize object
+         *
+         * @param {jQuery} el jQuery object of the select
+         */
         init: function(el){
 
             var $this = this;
@@ -65,6 +94,11 @@
 
             this.tokensContainer = $('<ul />')
                 .addClass('TokensContainer');
+
+            if(this.options.autosize){
+                this.tokensContainer
+                    .addClass('Autosize');
+            }
 
             this.searchToken = $('<li />')
                 .addClass('TokenSearch')
@@ -100,7 +134,7 @@
                     }).disableSelection();
                 } else {
                     this.options.sortable = false;
-                    console.log('jQuery UI is not loaded, sortable option has been disabled');
+                    console.error('jQuery UI is not loaded, sortable option has been disabled');
                 }
             }
 
@@ -124,7 +158,7 @@
 
             this.searchInput.on('focus click', function(){
                 $this.tokensContainer.addClass('Focused');
-                if($this.options.displayDropdownOnFocus && $this.options.datas == 'select'){
+                if($this.options.displayDropdownOnFocus){
                     $this.search();
                 }
             });
@@ -145,7 +179,12 @@
             this.searchInput.on('paste', function(){
                 setTimeout(function(){ $this.resizeSearchInput(); }, 10);
                 setTimeout(function(){
-                    var paste_elements = $this.searchInput.val().split(',');
+                    var paste_elements = [];
+                    if(Array.isArray($this.options.delimiter)){
+                        paste_elements = $this.searchInput.val().split(new RegExp($this.options.delimiter.join('|'), 'g'));
+                    } else {
+                        paste_elements = $this.searchInput.val().split($this.options.delimiter);
+                    }
                     if(paste_elements.length > 1){
                         $.each(paste_elements, function(_, value){
                             $this.tokenAdd(value.trim(), '');
@@ -164,34 +203,39 @@
             });
 
             this.resizeSearchInput();
-
-            $('option:selected', this.select).each(function(){
-                $this.tokenAdd($(this).attr('value'), $(this).html(), true);
-            });
-
+            this.remap(true);
             this.updatePlaceholder();
 
         },
 
+        /**
+         * Update elements order in the select html element
+         */
         updateOrder: function(){
 
-            var previous, current, $this = this;
-            $.each(this.tokensContainer.sortable('toArray', {attribute: 'data-value'}), function(k, v){
-                current = $('option[value="' + v + '"]', $this.select);
-                if(previous == undefined){
-                    current.prependTo($this.select);
-                } else {
-                    previous.after(current);
-                }
-                previous = current;
-            });
-            this.options.onReorder(this);
+            if(this.options.sortable){
+                var previous, current, $this = this;
+                $.each(this.tokensContainer.sortable('toArray', {attribute: 'data-value'}), function(k, v){
+                    current = $('option[value="' + v + '"]', $this.select);
+                    if(previous == undefined){
+                        current.prependTo($this.select);
+                    } else {
+                        previous.after(current);
+                    }
+                    previous = current;
+                });
+
+                this.options.onReorder(this);
+            }
 
         },
 
+        /**
+         * Update placeholder visibility
+         */
         updatePlaceholder: function(){
 
-            if(this.options.placeholder != false){
+            if(this.options.placeholder){
                 if(this.placeholder == undefined){
                     this.placeholder = $('<li />').addClass('Placeholder').html(this.options.placeholder);
                     this.placeholder.insertBefore($('li:first-child', this.tokensContainer));
@@ -206,12 +250,19 @@
 
         },
 
+        /**
+         * Display the dropdown
+         */
         dropdownShow: function(){
 
             this.dropdown.show();
+            this.options.onDropdownShow(this);
 
         },
 
+        /**
+         * Move the focus on the dropdown previous element
+         */
         dropdownPrev: function(){
 
             if($('li.Hover', this.dropdown).length > 0){
@@ -227,6 +278,9 @@
 
         },
 
+        /**
+         * Move the focus on the dropdown next element
+         */
         dropdownNext: function(){
 
             if($('li.Hover', this.dropdown).length > 0){
@@ -242,36 +296,44 @@
 
         },
 
+        /**
+         * Add an item to the dropdown
+         *
+         * @param {string} value The value of the item
+         * @param {string} text The display text of the item
+         * @param {string|undefined} [html] The html display text of the item (override previous parameter)
+         * @return {$.tokenize}
+         */
         dropdownAddItem: function(value, text, html){
 
-            if(html == undefined){
-                html = text;
+            html = html || text;
+
+            if(!$('li[data-value="' + value + '"]', this.tokensContainer).length){
+                var $this = this;
+                var item = $('<li />')
+                    .attr('data-value', value)
+                    .attr('data-text', text)
+                    .html(html)
+                    .on('click', function(e){
+                        e.stopImmediatePropagation();
+                        $this.tokenAdd($(this).attr('data-value'), $(this).attr('data-text'));
+                    }).on('mouseover', function(){
+                        $(this).addClass('Hover');
+                    }).on('mouseout', function(){
+                        $('li', $this.dropdown).removeClass('Hover');
+                    });
+
+                this.dropdown.append(item);
+                this.options.onDropdownAddItem(value, text, html, this);
             }
 
-            if($('li[data-value="' + value + '"]', this.tokensContainer).length){
-                return false;
-            }
-
-            var $this = this;
-            var item = $('<li />')
-                .attr('data-value', value)
-                .attr('data-text', text)
-                .html(html)
-                .on('click', function(e){
-                    e.stopImmediatePropagation();
-                    $this.tokenAdd($(this).attr('data-value'), $(this).attr('data-text'));
-                }).on('mouseover', function(){
-                    $(this).addClass('Hover');
-                }).on('mouseout', function(){
-                    $('li', $this.dropdown).removeClass('Hover');
-                });
-
-            this.dropdown.append(item);
-            this.options.onDropdownAddItem(value, text, html, this);
-            return true;
+            return this;
 
         },
 
+        /**
+         * Hide dropdown
+         */
         dropdownHide: function(){
 
             this.dropdownReset();
@@ -279,19 +341,28 @@
 
         },
 
+        /**
+         * Reset dropdown
+         */
         dropdownReset: function(){
 
             this.dropdown.html('');
 
         },
 
+        /**
+         * Resize search input according the value length
+         */
         resizeSearchInput: function(){
 
-            this.searchInput.attr('size', (this.searchInput.val().length > 1 ? this.searchInput.val().length : 5));
+            this.searchInput.attr('size', Number(this.searchInput.val().length)+5);
             this.updatePlaceholder();
 
         },
 
+        /**
+         * Reset search input
+         */
         resetSearchInput: function(){
 
             this.searchInput.val("");
@@ -299,21 +370,46 @@
 
         },
 
+        /**
+         * Reset pending tokens
+         */
         resetPendingTokens: function(){
 
             $('li.PendingDelete', this.tokensContainer).removeClass('PendingDelete');
 
         },
 
+        /**
+         * Keypress
+         *
+         * @param {object} e
+         */
         keypress: function(e){
 
-            if(String.fromCharCode(e.which) == this.options.delimiter){
+            var delimiter = false;
+
+            if(Array.isArray(this.options.delimiter)){
+                if(this.options.delimiter.indexOf(String.fromCharCode(e.which)) >= 0){
+                    delimiter = true;
+                }
+            } else {
+                if(String.fromCharCode(e.which) == this.options.delimiter){
+                    delimiter = true;
+                }
+            }
+
+            if(delimiter){
                 e.preventDefault();
                 this.tokenAdd(this.searchInput.val(), '');
             }
 
         },
 
+        /**
+         * Keydown
+         *
+         * @param {object} e
+         */
         keydown: function(e){
 
             switch(e.keyCode){
@@ -367,6 +463,11 @@
 
         },
 
+        /**
+         * Keyup
+         *
+         * @param {object} e
+         */
         keyup: function(e){
 
             this.updatePlaceholder();
@@ -394,12 +495,16 @@
 
         },
 
+        /**
+         * Search an element in the select or using ajax
+         */
         search: function(){
 
             var $this = this;
             var count = 1;
 
-            if(this.options.maxElements > 0 && $('li.Token', this.tokensContainer).length >= this.options.maxElements){
+            if((this.options.maxElements > 0 && $('li.Token', this.tokensContainer).length >= this.options.maxElements) ||
+                this.searchInput.val().length < this.options.searchMinLength){
                 return false;
             }
 
@@ -408,7 +513,7 @@
                 var found = false, regexp = new RegExp(this.searchInput.val().replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&"), 'i');
                 this.dropdownReset();
 
-                $('option', this.select).not(':selected').each(function(){
+                $('option', this.select).not(':selected, :disabled').each(function(){
                     if(count <= $this.options.nbDropdownElements){
                         if(regexp.test($(this).html())){
                             $this.dropdownAddItem($(this).attr('value'), $(this).html());
@@ -430,16 +535,19 @@
             } else {
 
                 this.debounce(function(){
-                    $.ajax({
+                    if(this.ajax !== undefined){
+                        this.ajax.abort();
+                    }
+                    this.ajax = $.ajax({
                         url: $this.options.datas,
-                        data: $this.options.searchParam + "=" + $this.searchInput.val(),
+                        data: $this.options.searchParam + "=" + encodeURIComponent($this.searchInput.val()),
                         dataType: $this.options.dataType,
                         success: function(data){
                             if(data){
                                 $this.dropdownReset();
                                 $.each(data, function(key, val){
                                     if(count <= $this.options.nbDropdownElements){
-                                        var html = undefined;
+                                        var html;
                                         if(val[$this.options.htmlField]){
                                             html = val[$this.options.htmlField];
                                         }
@@ -457,8 +565,8 @@
                             }
                             $this.dropdownHide();
                         },
-                        error: function(XHR, textStatus) {
-                            console.log("Error : " + textStatus);
+                        error: function(xhr, text_status) {
+                            $this.options.onAjaxError($this, xhr, text_status);
                         }
                     });
                 }, this.options.debounce);
@@ -467,6 +575,11 @@
 
         },
 
+        /**
+         * Debounce method for ajax request
+         * @param {function} func
+         * @param {number} threshold
+         */
         debounce: function(func, threshold){
 
             var obj = this, args = arguments;
@@ -481,25 +594,28 @@
 
         },
 
+        /**
+         * Add a token in container
+         *
+         * @param {string} value The value of the token
+         * @param {string|undefined} [text] The label of the token (use value if empty)
+         * @param {boolean|undefined} [first] If true, onAddToken event will be not called
+         * @return {$.tokenize}
+         */
         tokenAdd: function(value, text, first){
 
-            value = this.escape(value);
+            value = this.escape(value).trim();
 
             if(value == undefined || value == ''){
-                return false;
+                return this;
             }
 
-            if(text == undefined || text == ''){
-                text = value;
-            }
-
-            if(first == undefined){
-                first = false;
-            }
+            text = text || value;
+            first = first || false;
 
             if(this.options.maxElements > 0 && $('li.Token', this.tokensContainer).length >= this.options.maxElements){
                 this.resetSearchInput();
-                return false;
+                return this;
             }
 
             var $this = this;
@@ -512,22 +628,26 @@
                 });
 
             if($('option[value="' + value + '"]', this.select).length){
-                $('option[value="' + value + '"]', this.select).attr('selected', 'selected');
+                if(!first && ($('option[value="' + value + '"]', this.select).attr('selected') === true ||
+                    $('option[value="' + value + '"]', this.select).prop('selected') === true)){
+                    this.options.onDuplicateToken(value, text, this);
+                }
+                $('option[value="' + value + '"]', this.select).attr('selected', true).prop('selected', true);
             } else if(this.options.newElements || (!this.options.newElements && $('li[data-value="' + value + '"]', this.dropdown).length > 0)) {
                 var option = $('<option />')
-                    .attr('selected', 'selected')
+                    .attr('selected', true)
                     .attr('value', value)
                     .attr('data-type', 'custom')
+                    .prop('selected', true)
                     .html(text);
-
                 this.select.append(option);
             } else {
                 this.resetSearchInput();
-                return false;
+                return this;
             }
 
             if($('li.Token[data-value="' + value + '"]', this.tokensContainer).length > 0) {
-                return false;
+                return this;
             }
 
             $('<li />')
@@ -543,11 +663,18 @@
 
             this.resetSearchInput();
             this.dropdownHide();
+            this.updateOrder();
 
-            return true;
+            return this;
 
         },
 
+        /**
+         * Remove a token
+         *
+         * @param {string} value The value of the token who has to be removed
+         * @returns {$.tokenize}
+         */
         tokenRemove: function(value){
 
             var option = $('option[value="' + value + '"]', this.select);
@@ -555,7 +682,7 @@
             if(option.attr('data-type') == 'custom'){
                 option.remove();
             } else {
-                option.removeAttr('selected');
+                option.removeAttr('selected').prop('selected', false);
             }
 
             $('li.Token[data-value="' + value + '"]', this.tokensContainer).remove();
@@ -563,43 +690,117 @@
             this.options.onRemoveToken(value, this);
             this.resizeSearchInput();
             this.dropdownHide();
+            this.updateOrder();
+
+            return this;
 
         },
 
+        /**
+         * Clear tokens
+         *
+         * @returns {$.tokenize}
+         */
         clear: function(){
 
             var $this = this;
+
             $('li.Token', this.tokensContainer).each(function(){
                 $this.tokenRemove($(this).attr('data-value'));
             });
 
             this.options.onClear(this);
+            this.dropdownHide();
+
+            return this;
 
         },
 
+        /**
+         * Disable tokenize
+         *
+         * @returns {$.tokenize}
+         */
         disable: function(){
 
             this.select.prop('disabled', true);
             this.searchInput.prop('disabled', true);
             this.container.addClass('Disabled');
             if(this.options.sortable){
-                this.tokensContainer.sortable('disable')
+                this.tokensContainer.sortable('disable');
             }
+
+            return this;
 
         },
 
+        /**
+         * Enable tokenize
+         *
+         * @returns {$.tokenize}
+         */
         enable: function(){
 
             this.select.prop('disabled', false);
             this.searchInput.prop('disabled', false);
             this.container.removeClass('Disabled');
             if(this.options.sortable){
-                this.tokensContainer.sortable('enable')
+                this.tokensContainer.sortable('enable');
             }
+
+            return this;
 
         },
 
+        /**
+         * Refresh tokens reflecting select options
+         *
+         * @param {boolean} first If true, onAddToken event will be not called
+         * @returns {$.tokenize}
+         */
+        remap: function(first){
+
+            var $this = this;
+            var tmp = $("option:selected", this.select);
+
+            first = first || false;
+
+            this.clear();
+
+            tmp.each(function(){
+                $this.tokenAdd($(this).val(), $(this).html(), first);
+            });
+
+            return this;
+
+        },
+
+        /**
+         * Retrieve tokens value to an array
+         *
+         * @returns {Array}
+         */
+        toArray: function(){
+
+            var output = [];
+            $("option:selected", this.select).each(function(){
+                output.push($(this).val());
+            });
+            return output;
+
+        },
+
+        /**
+         * Escape string
+         *
+         * @param {string} string
+         * @returns {string}
+         */
         escape: function(string){
+
+            var tmp = document.createElement("div");
+            tmp.innerHTML = string;
+            string = tmp.textContent || tmp.innerText || "";
 
             return String(string).replace(/["]/g, function(){
                 return '';
@@ -609,20 +810,29 @@
 
     });
 
+    /**
+     * Tokenize plugin
+     *
+     * @param {Object|undefined} [options]
+     * @returns {$.tokenize|Array}
+     */
     $.fn.tokenize = function(options){
 
-        if(options == undefined){
-            options = {};
+        options = options || {};
+
+        var selector = this.filter('select');
+
+        if(selector.length > 1){
+            var objects = [];
+            selector.each(function(){
+                objects.push(getObject(options, $(this)));
+            });
+            return objects;
         }
-
-        this.each(function(){
-            var obj = new $.tokenize($.extend({}, $.fn.tokenize.defaults, options));
-            obj.init($(this));
-            $(this).data(DATA, obj);
-        });
-
-        return this;
-
+        else
+        {
+            return getObject(options, $(this));
+        }
     };
 
     $.fn.tokenize.defaults = {
@@ -631,9 +841,11 @@
         placeholder: false,
         searchParam: 'search',
         searchMaxLength: 0,
+        searchMinLength: 0,
         debounce: 0,
         delimiter: ',',
         newElements: true,
+        autosize: false,
         nbDropdownElements: 10,
         displayDropdownOnFocus: false,
         maxElements: 0,
@@ -647,7 +859,10 @@
         onRemoveToken: function(value, e){},
         onClear: function(e){},
         onReorder: function(e){},
-        onDropdownAddItem: function(value, text, html, e){}
+        onDropdownAddItem: function(value, text, html, e){},
+        onDropdownShow: function(e){},
+        onDuplicateToken: function(value, text, e){},
+        onAjaxError: function(e, xhr, text_status){}
 
     };
 

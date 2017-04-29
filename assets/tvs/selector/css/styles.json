@@ -1,11 +1,11 @@
 {
   "styles": {
     "TokenizeCss" : {
-      "version":"2.4.1",
+      "version":"2.6.1",
       "src":"assets/js/tokenize/jquery.tokenize.css"
     },
     "SelectorCss" : {
-      "version":"1.0.0",
+      "version":"1.2.0",
       "src":"assets/tvs/selector/css/style.css"
     }
   }
