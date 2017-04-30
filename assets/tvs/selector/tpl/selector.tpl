@@ -6,7 +6,7 @@
 (function($){
     $('#tokenizetv[+tv_id+]').tokenize({
         datas:'[+site_url+]assets/tvs/selector/ajax.php',
-        searchParam: 'doc_id=[+doc_id+]&doc_parent=[+doc_parent+]&doc_template=[+doc_template+]&tvid=[+tv_id+]&tvname=[+tv_name+]&search',
+        searchParam: 'doc_id=[+doc_id+]&doc_parent=[+doc_parent+]&doc_template=[+doc_template+]&tvid=[+tv_id+]&tvname=[+tv_name+]&ts=[+timestamp+]&search',
         valueField: '[+valueField+]',
         textField: '[+textField+]',
         htmlField: '[+htmlField+]',

@@ -20,7 +20,9 @@ class Selector
         'textField'          => 'text',
         'valueField'         => 'id',
         'htmlField'          => 'html',
-        'tokenTpl'           => '@CODE: <option value="[+id+]" selected>[+id+]. [+pagetitle+]</option>'
+        'tokenConfig'        => array(
+            'tpl' => '@CODE: <option value="[+id+]" selected>[+id+]. [+pagetitle+]</option>'
+        )
     );
     public $tpl = 'assets/tvs/selector/tpl/selector.tpl';
     public $jsListDefault = 'assets/tvs/selector/js/scripts.json';
@@ -129,13 +131,15 @@ class Selector
             'textField'          => $this->config['textField'],
             'valueField'         => $this->config['valueField'],
             'htmlField'          => $this->config['htmlField'],
-            'values'             => !empty($this->tv['value']) ? $this->modx->runSnippet('DocLister', array(
-                'idType'        => 'documents',
-                'documents'     => $this->tv['value'],
-                'showNoPublish' => 1,
-                'sortType'      => 'doclist',
-                'tpl'           => $this->config['tokenTpl']
-            )) : ''
+            'timestamp'          => $this->getTimestamp(),
+            'values'             => !empty($this->tv['value']) ? $this->modx->runSnippet('DocLister',
+                array_merge($this->config['tokenConfig'], array(
+                    'idType'        => 'documents',
+                    'documents'     => $this->tv['value'],
+                    'showNoPublish' => 1,
+                    'sortType'      => 'doclist'
+                ))
+            ) : ''
         );
 
         return $ph;
@@ -172,5 +176,12 @@ class Selector
                 $this->config = array_merge($this->config, $_config);
             }
         }
+    }
+
+    protected function getTimestamp()
+    {
+        $cachePath = $this->modx->getCacheFolder();
+
+        return filemtime(MODX_BASE_PATH . $cachePath . 'siteCache.idx.php');
     }
 }

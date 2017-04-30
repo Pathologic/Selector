@@ -93,6 +93,12 @@ class SelectorController
     {
         $search = is_scalar($_REQUEST['search']) ? $_REQUEST['search'] : '';
         if (!empty($search)) {
+            if (substr($search,0,1) == '=') {
+                $search = substr($search,1);
+                $mode = '=';
+            } else {
+                $mode = 'like';
+            }
             $this->dlParams['search'] = $search;
             $searchContentFields = explode(',', $this->dlParams['searchContentFields']);
             $filters = array();
@@ -102,12 +108,12 @@ class SelectorController
             }
 
             foreach ($searchContentFields as $field) {
-                $filters[] = "content:{$field}:like:{$search}";
+                $filters[] = "content:{$field}:{$mode}:{$search}";
             }
 
             $searchTVFields = explode(',', $this->dlParams['searchTVFields']);
             foreach ($searchTVFields as $tv) {
-                $filters[] = "tv:{$tv}:like:{$search}";
+                $filters[] = "tv:{$tv}:{$mode}:{$search}";
             }
             $filters = implode(';', $filters);
             if (!empty($filters)) {
