@@ -5,7 +5,7 @@
       "src":"assets/js/tokenize/jquery.tokenize.css"
     },
     "SelectorCss" : {
-      "version":"1.3.0",
+      "version":"1.2.0",
       "src":"assets/tvs/selector/css/style.css"
     }
   }

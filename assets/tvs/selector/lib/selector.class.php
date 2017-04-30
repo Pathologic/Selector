@@ -20,6 +20,7 @@ class Selector
         'textField'          => 'text',
         'valueField'         => 'id',
         'htmlField'          => 'html',
+        'divider'            => ',',
         'tokenConfig'        => array(
             'tpl' => '@CODE: <option value="[+id+]" selected>[+id+]. [+pagetitle+]</option>'
         )
@@ -124,13 +125,6 @@ class Selector
             'doc_parent'         => $this->documentData['parent'],
             'doc_template'       => $this->documentData['template'],
             'site_url'           => $this->modx->config['site_url'],
-            'maxElements'        => $this->config['maxElements'],
-            'nbDropdownElements' => $this->config['nbDropdownElements'],
-            'searchMaxLength'    => $this->config['searchMaxLength'],
-            'searchMinLength'    => $this->config['searchMinLength'],
-            'textField'          => $this->config['textField'],
-            'valueField'         => $this->config['valueField'],
-            'htmlField'          => $this->config['htmlField'],
             'timestamp'          => $this->getTimestamp(),
             'values'             => !empty($this->tv['value']) ? $this->modx->runSnippet('DocLister',
                 array_merge($this->config['tokenConfig'], array(
@@ -141,8 +135,9 @@ class Selector
                 ))
             ) : ''
         );
+        unset($this->config['tokenConfig']);
 
-        return $ph;
+        return array_merge($ph, $this->config);
     }
 
     /**

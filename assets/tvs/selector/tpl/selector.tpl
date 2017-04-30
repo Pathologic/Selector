@@ -18,10 +18,10 @@
         searchMinLength: [+searchMinLength+],
         displayDropdownOnFocus:true,
         onAddToken: function (value, text, e) {
-            selector.update(e.select,$('#tv[+tv_id+]'),',');
+            selector.update(e.select,$('#tv[+tv_id+]'),'[+divider+]');
         },
         onRemoveToken: function(value, e) {
-            selector.update(e.select,$('#tv[+tv_id+]'),',');
+            selector.update(e.select,$('#tv[+tv_id+]'),'[+divider+]');
         }
     });
     var el = $('.tokenizetv[+tv_id+] ul.TokensContainer');
@@ -32,7 +32,7 @@
             if (e.related.className == "TokenSearch") return false;
         },
         onSort: function (e) {
-            selector.sort($('.tokenizetv[+tv_id+]'),$('#tv[+tv_id+]'),',');
+            selector.sort($('.tokenizetv[+tv_id+]'),$('#tv[+tv_id+]'),'[+divider+]');
         }
     });
 })(jQuery);
