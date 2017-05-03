@@ -62,12 +62,6 @@ class SelectorController
         \DocLister $_DL,
         \prepare_DL_Extender $_extDocLister
     ) {
-        if (($data['parentName'] = $_extDocLister->getStore('parentName' . $data['parent'])) === null) {
-            $q = $modx->db->query("SELECT pagetitle FROM " . $modx->getFullTableName('site_content') . " WHERE id = '" . $data['parent'] . "'");
-            $data['parentName'] = $modx->db->getValue($q);
-            $_extDocLister->setStore('parentName' . $data['parent'], $data['parentName']);
-        }
-
         if (($docCrumbs = $_extDocLister->getStore('currentParents' . $data['parent'])) === null) {
             $modx->documentObject['id'] = $data['id'];
             $docCrumbs = rtrim($modx->runSnippet('DLcrumbs', array(
@@ -78,8 +72,12 @@ class SelectorController
             )), ' /');
             $_extDocLister->setStore('currentParents' . $data['parent'], $docCrumbs);
         }
-        $html = preg_replace("/(" . preg_quote($_DL->getCFGDef('search'), "/") . ")/iu", "<b>$0</b>",
-            $data[$_DL->getCFGDef('textField', 'pagetitle')]);
+        if ($search = $_DL->getCFGDef('search')) {
+            $html = preg_replace("/(" . preg_quote($search, "/") . ")/iu", "<b>$0</b>",
+                $data[$_DL->getCFGDef('textField', 'pagetitle')]);
+        } else {
+            $html = $data[$_DL->getCFGDef('textField', 'pagetitle')];
+        }
         $data['text'] = "{$data[$_DL->getCFGDef('idField','id')]}. {$data[$_DL->getCFGDef('textField','pagetitle')]}";
         $data['html'] = "<div><small>{$docCrumbs}</small><br>{$data['id']}. {$html}</div>";
 
@@ -93,8 +91,8 @@ class SelectorController
     {
         $search = is_scalar($_REQUEST['search']) ? $_REQUEST['search'] : '';
         if (!empty($search)) {
-            if (substr($search,0,1) == '=') {
-                $search = substr($search,1);
+            if (substr($search, 0, 1) == '=') {
+                $search = substr($search, 1);
                 $mode = '=';
             } else {
                 $mode = 'like';
