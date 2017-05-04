@@ -65,7 +65,7 @@ class SelectorController
         if (($docCrumbs = $_extDocLister->getStore('currentParents' . $data['parent'])) === null) {
             $modx->documentObject['id'] = $data['id'];
             $docCrumbs = rtrim($modx->runSnippet('DLcrumbs', array(
-                'ownerTPL'   => '@CODE:[+crumbs.wrap+]',
+                'ownerTPL'   => '@CODE:[+dl.wrap+]',
                 'tpl'        => '@CODE: [+title+] /',
                 'tplCurrent' => '@CODE: [+title+] /',
                 'hideMain'   => '1'
