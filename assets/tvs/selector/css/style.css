@@ -1,6 +1,9 @@
 div.Tokenize {
     display: block;
 }
+div.Tokenize li:before { /* @FIX: MODX.Evo.Custom 1.2.1-d9.1.4 MODxRE2 DropdownMenu theme CSS */
+	content: '';
+}
 div.Tokenize ul.TokensContainer {
     height:auto;
     width:100%;
