@@ -129,7 +129,7 @@ class Selector
             'values'             => !empty($this->tv['value']) ? $this->modx->runSnippet('DocLister',
                 array_merge($this->config['tokenConfig'], array(
                     'idType'        => 'documents',
-                    'documents'     => $this->tv['value'],
+                    'documents'     => str_replace($this->config['divider'], ',', $this->tv['value']),
                     'showNoPublish' => 1,
                     'sortType'      => 'doclist'
                 ))
