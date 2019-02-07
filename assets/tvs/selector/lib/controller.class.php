@@ -15,12 +15,12 @@ class SelectorController
         'JSONformat'          => 'old',
         'display'             => 10,
         'offset'              => 0,
-        'sortBy'              => 'id',
+        'sortBy'              => 'c.id',
         'sortDir'             => 'desc',
         'parents'             => 0,
         'showParent'          => 1,
         'depth'               => 10,
-        'searchContentFields' => 'id,pagetitle,longtitle',
+        'searchContentFields' => 'c.id,c.pagetitle,c.longtitle',
         'searchTVFields'      => '',
         'idField'             => 'id',
         'textField'           => 'pagetitle',
@@ -109,9 +109,11 @@ class SelectorController
                 $filters[] = "content:{$field}:{$mode}:{$search}";
             }
 
-            $searchTVFields = explode(',', $this->dlParams['searchTVFields']);
-            foreach ($searchTVFields as $tv) {
-                $filters[] = "tv:{$tv}:{$mode}:{$search}";
+            if (!empty($this->dlParams['searchTVFields'])) {
+                $searchTVFields = explode(',', $this->dlParams['searchTVFields']);
+                foreach ($searchTVFields as $tv) {
+                    $filters[] = "tv:{$tv}:{$mode}:{$search}";
+                }
             }
             $filters = implode(';', $filters);
             if (!empty($filters)) {
