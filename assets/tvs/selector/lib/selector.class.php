@@ -175,8 +175,8 @@ class Selector
 
     protected function getTimestamp()
     {
-        $cachePath = $this->modx->getCacheFolder();
+        $cachePath = defined('EVO_CORE_PATH') ? $this->modx->getSiteCacheFilePath() : MODX_BASE_PATH . $this->modx->getCacheFolder() . 'siteCache.idx.php';
 
-        return filemtime(MODX_BASE_PATH . $cachePath . 'siteCache.idx.php');
+        return filemtime($cachePath);
     }
 }
