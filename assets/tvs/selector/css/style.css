@@ -2,7 +2,7 @@ div.Tokenize {
     display: block;
 }
 div.Tokenize li:before { /* @FIX: MODX.Evo.Custom 1.2.1-d9.1.4 MODxRE2 DropdownMenu theme CSS */
-	content: '';
+    content: '';
 }
 div.Tokenize ul.TokensContainer {
     height:auto;
@@ -10,13 +10,61 @@ div.Tokenize ul.TokensContainer {
 }
 div.Tokenize ul.Dropdown {
     width:auto;
+    border: 1px solid #d4d4d4;
+}
+div.Tokenize ul.TokensContainer {
+    border: 1px solid #d4d4d4;
 }
 div.Tokenize ul.TokensContainer li {
     list-style: none!important;
 }
+div.Tokenize ul.TokensContainer li.Token {
+    cursor: move;
+    cursor: -webkit-grab;
+    border-color: #d4d4d4;
+    background-color: #f3f3f3;
+}
+div.Tokenize ul.TokensContainer li.Token, div.Tokenize ul.TokensContainer li.TokenSearch {
+    padding: 0;
+    height: auto;
+    border-radius: 2px;
+}
 div.Tokenize ul.TokensContainer li a {
     text-decoration: none!important;
 }
-div.Tokenize ul.TokensContainer li.Token, div.Tokenize ul.TokensContainer li.TokenSearch {
-    margin-bottom:5px;
+div.Tokenize ul.TokensContainer li.Token a.Close {
+    margin: 0;
+    padding: 3px 6px;
+    cursor: pointer;
+    color: #999;
+    background: rgba(0,0,0,0.05);
+    border-right: 1px solid rgba(0,0,0,0.07);
+    font-weight: bold;
+    float: left;
+}
+div.TokenizeMeasure, div.Tokenize ul li span, div.Tokenize ul.TokensContainer li.TokenSearch input {
+    display: inline-block;
+    font-family: inherit;
+    font-size: 0.8125rem;
+    padding: 3px 8px;
+}
+
+.darkness div.Tokenize ul.TokensContainer, .darkness div.Tokenize ul.Dropdown {
+    background: #202329;
+    border-color: #414449;
+}
+
+.darkness div.Tokenize ul.TokensContainer li.Token {
+    border-color: #414449;
+    background-color: #282c34;
+    color: #bbb;
+}
+
+.darkness div.Tokenize ul.TokensContainer li.Token a.Close {
+    background: rgba(0, 0, 0, 0.13);
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.darkness div.Tokenize ul.TokensContainer li.TokenSearch input {
+    color: #bbb;
 }
