@@ -64,3 +64,7 @@ div.TokenizeMeasure, div.Tokenize ul li span, div.Tokenize ul.TokensContainer li
     background: rgba(0, 0, 0, 0.13);
     border-right: 1px solid rgba(255, 255, 255, 0.08);
 }
+
+.darkness div.Tokenize ul.TokensContainer li.TokenSearch input {
+    color: #bbb;
+}
