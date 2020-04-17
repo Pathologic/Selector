@@ -91,7 +91,8 @@ class Selector
                 if (!isset($this->modx->loadedjscripts[$name])) {
                     if ($this->fs->checkFile($params['src'])) {
                         $this->modx->loadedjscripts[$name] = array('version' => $params['version']);
-                        if (end(explode('.', $params['src'])) == 'js') {
+                        $val = explode('.', $params['src']);
+                        if (end($val) == 'js') {
                             $js .= '<script type="text/javascript" src="' . $this->modx->config['site_url'] . $params['src'] . '"></script>';
                         } else {
                             $js .= '<link rel="stylesheet" type="text/css" href="' . $this->modx->config['site_url'] . $params['src'] . '">';
