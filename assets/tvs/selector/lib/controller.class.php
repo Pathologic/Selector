@@ -57,7 +57,7 @@ class SelectorController
      * @return array
      */
     public static function prepare(
-        array $data = array(),
+        array $data,
         \DocumentParser $modx,
         \DocLister $_DL,
         \prepare_DL_Extender $_extDocLister
@@ -89,7 +89,7 @@ class SelectorController
      */
     public function listing()
     {
-        $search = is_scalar($_REQUEST['search']) ? $_REQUEST['search'] : '';
+        $search = isset($_REQUEST['search']) && is_scalar($_REQUEST['search']) ? $_REQUEST['search'] : '';
         if (!empty($search)) {
             if (substr($search, 0, 1) == '=') {
                 $search = substr($search, 1);
