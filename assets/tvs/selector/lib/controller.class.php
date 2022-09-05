@@ -43,7 +43,7 @@ class SelectorController
      */
     public function callExit()
     {
-        if ($this->isExit) {
+        if (isset($this->isExit)) {
             echo $this->output;
             exit;
         }
