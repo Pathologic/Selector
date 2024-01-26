@@ -48,4 +48,4 @@ Request to the controller contains the following data in $_REQUEST:
 * tvname - TV name;
 * search - query string.
 
-Selector is discussed [here](http://modx.im/blog/addons/3461.html)
+Selector is discussed [here](https://community.evocms.ru/blog/addons/4166-selector-custom-tv-dlya-sostavleniya-spiska-dokumentov.html)
