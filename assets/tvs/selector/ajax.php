@@ -42,7 +42,6 @@ if($controller instanceof \Selector\SelectorController){
     }else{
         $out = call_user_func_array(array($controller, 'listing'), array());
     }
-    $controller->callExit();
 }
 
 echo ($out = is_array($out) ? json_encode($out) : $out);
