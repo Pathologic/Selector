@@ -39,17 +39,6 @@ class SelectorController
     }
 
     /**
-     *
-     */
-    public function callExit()
-    {
-        if (isset($this->isExit)) {
-            echo $this->output;
-            exit;
-        }
-    }
-
-    /**
      * @param array $data
      * @param \DocumentParser $modx
      * @param \DocLister $_DL
